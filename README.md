@@ -19,13 +19,10 @@ A dependency-free custom Lovelace card for Home Assistant that renders a Materia
 
 1. Add this repository in HACS as a custom repository of type `Dashboard`.
 2. Install the card from HACS.
-3. Add the Lovelace resource:
+3. HACS will install the Lovelace resource for you and serve it from `/hacsfiles/ha-segmented-button-card.js`.
+4. Reload the dashboard and add a card with `type: custom:ha-segmented-button-card`.
 
-```yaml
-resources:
-  - url: /hacsfiles/ha-segmented-button.js
-    type: module
-```
+The card includes a built-in visual editor, so you can configure it directly from the Lovelace UI after HACS installs it.
 
 ### Manual install
 
@@ -39,8 +36,6 @@ resources:
 ```
 
 3. Reload the dashboard and add a card with `type: custom:ha-segmented-button-card`.
-
-The card includes a built-in visual editor, so you can also configure it directly from the Lovelace UI after the resource is loaded.
 
 ## Example
 
