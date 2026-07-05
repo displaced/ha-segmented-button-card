@@ -8,7 +8,6 @@ class HASegmentedButtonCard extends HTMLElement {
   static getStubConfig() {
     return {
       entity: '',
-      header: '',
       segments: [],
     };
   }
@@ -31,7 +30,6 @@ class HASegmentedButtonCard extends HTMLElement {
     }
 
     this._config = {
-      header: config.header || '',
       entity: config.entity,
       segments: Array.isArray(config.segments) ? config.segments : [],
     };
@@ -47,7 +45,7 @@ class HASegmentedButtonCard extends HTMLElement {
   }
 
   getCardSize() {
-    return this._config?.header ? 2 : 1;
+    return 1;
   }
 
   _getEntityState() {
@@ -100,7 +98,6 @@ class HASegmentedButtonCard extends HTMLElement {
     const options = entityState?.attributes?.options || [];
     return JSON.stringify([
       this._config?.entity || '',
-      this._config?.header || '',
       this._config?.segments || [],
       entityState?.state ?? '',
       options,
@@ -150,10 +147,7 @@ class HASegmentedButtonCard extends HTMLElement {
     }
 
     const entityState = this._getEntityState();
-    const currentValue = entityState?.state ?? '';
-    const friendlyName = entityState?.attributes?.friendly_name || this._config.entity;
     const segments = this._getSegments();
-    const hasHeader = Boolean(this._config.header);
     const hasEntity = Boolean(this._config.entity);
 
     this.shadowRoot.innerHTML = `
@@ -174,30 +168,6 @@ class HASegmentedButtonCard extends HTMLElement {
           padding: 16px;
           border-radius: 16px;
           box-sizing: border-box;
-        }
-
-        .header {
-          display: flex;
-          justify-content: space-between;
-          gap: 12px;
-          align-items: baseline;
-          margin-bottom: 12px;
-        }
-
-        .title {
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--primary-text-color);
-          line-height: 1.3;
-        }
-
-        .subtitle {
-          font-size: 12px;
-          color: var(--segment-muted);
-          line-height: 1.3;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
         }
 
         .segments {
@@ -283,12 +253,6 @@ class HASegmentedButtonCard extends HTMLElement {
             padding: 12px;
           }
 
-          .header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-          }
-
           .segment {
             min-height: 44px;
             padding: 10px 8px;
@@ -297,10 +261,6 @@ class HASegmentedButtonCard extends HTMLElement {
       </style>
 
       <ha-card>
-        <div class="${hasHeader ? 'header' : 'header hidden'}">
-          <div class="title">${this._escapeHtml(this._config.header || friendlyName)}</div>
-          <div class="subtitle">${this._escapeHtml(currentValue || 'Unavailable')}</div>
-        </div>
         <div class="${segments.length ? 'segments' : 'empty'}">
           ${!hasEntity
             ? '<div>Choose an input_select helper to preview the card.</div>'
@@ -355,7 +315,6 @@ class HASegmentedButtonCardEditor extends HTMLElement {
   setConfig(config) {
     this._config = {
       entity: config?.entity || '',
-      header: config?.header || '',
       segments: Array.isArray(config?.segments)
         ? config.segments.map((segment) => {
             if (typeof segment === 'string') {
@@ -409,7 +368,6 @@ class HASegmentedButtonCardEditor extends HTMLElement {
     return {
       type: `custom:${CARD_TYPE}`,
       entity: this._config?.entity || '',
-      header: this._config?.header || '',
       segments: (this._config?.segments || []).map((segment) => ({
         value: segment.value || '',
         text: segment.text || '',
@@ -614,18 +572,12 @@ class HASegmentedButtonCardEditor extends HTMLElement {
       <div class="card">
         <div class="section">
           <div class="section-title">Control</div>
-          <div class="row">
+          <div class="row single">
             <ha-entity-picker
               label="Input Select"
               data-role="entity-picker"
               value="${this._config.entity}"
             ></ha-entity-picker>
-            <ha-textfield
-              data-role="header-field"
-              label="Header"
-              value="${this._config.header}"
-              placeholder="Optional title for the card"
-            ></ha-textfield>
           </div>
           <div class="helper-text">
             Choose an input_select helper to create one row per option, then edit each option's displayed label and icon, or remove any row you do not want shown.
@@ -673,14 +625,6 @@ class HASegmentedButtonCardEditor extends HTMLElement {
       });
     }
 
-    const headerField = this.shadowRoot.querySelector('ha-textfield[data-role="header-field"]');
-    if (headerField) {
-      headerField.value = this._config.header || '';
-      headerField.addEventListener('change', (event) => {
-        this._updateConfig({ header: event.target.value || '' });
-      });
-    }
-
     this.shadowRoot.querySelectorAll('input[data-index]').forEach((field) => {
       field.addEventListener('change', (event) => {
         const index = Number(field.getAttribute('data-index'));
@@ -715,10 +659,6 @@ class HASegmentedButtonCardEditor extends HTMLElement {
         entityPicker.value = this._config.entity;
       }
 
-      if (headerField) {
-        headerField.value = this._config.header || '';
-      }
-
       this.shadowRoot.querySelectorAll('input[data-index]').forEach((field) => {
         const fieldIndex = Number(field.getAttribute('data-index'));
         const fieldName = field.getAttribute('data-field');
@@ -733,11 +673,6 @@ class HASegmentedButtonCardEditor extends HTMLElement {
     });
   }
 
-  _canSyncFromHelper() {
-    const entityId = this._config?.entity;
-    const entityState = entityId && this._hass ? this._hass.states[entityId] : null;
-    return Boolean(entityState?.attributes?.options?.length);
-  }
 }
 
 if (!customElements.get(CARD_TYPE)) {
