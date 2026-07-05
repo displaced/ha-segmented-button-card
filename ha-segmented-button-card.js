@@ -147,7 +147,6 @@ class HASegmentedButtonCard extends HTMLElement {
     }
 
     const entityState = this._getEntityState();
-    const currentValue = entityState?.state ?? '';
     const segments = this._getSegments();
     const hasEntity = Boolean(this._config.entity);
 
@@ -268,7 +267,7 @@ class HASegmentedButtonCard extends HTMLElement {
             : segments.length
             ? segments
                 .map((segment) => {
-                  const selected = segment.value === currentValue;
+                  const selected = segment.value === (entityState?.state ?? '');
                   const icon = segment.icon
                     ? `<ha-icon class="segment-icon" icon="${this._escapeHtml(segment.icon)}"></ha-icon>`
                     : '';
