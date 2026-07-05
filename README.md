@@ -37,11 +37,11 @@ resources:
 
 ### Config Editor
 
-<img src="docs/images/config-editor.png" alt="Segmented Button Card configuration editor" width="720" />
+<img src="https://raw.githubusercontent.com/displaced/ha-segmented-button-card/main/docs/images/config-editor.png" alt="Segmented Button Card configuration editor" width="720" />
 
 ### Dashboard Card
 
-<img src="docs/images/card.png" alt="Segmented Button Card on a Home Assistant dashboard" width="720" />
+<img src="https://raw.githubusercontent.com/displaced/ha-segmented-button-card/main/docs/images/card.png" alt="Segmented Button Card on a Home Assistant dashboard" width="720" />
 
 ## Example
 
