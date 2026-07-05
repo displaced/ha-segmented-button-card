@@ -24,9 +24,34 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
+      - name: Compute release version
+        id: release_version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          prefix="$(date -u +%Y.%m.%d)"
+          tags_url="https://github.com/${{ github.repository }}.git"
+
+          # Find existing tags for today in the format YYYY.MM.DD.C and pick the next C.
+          mapfile -t matching_tags < <(git ls-remote --tags --refs "$tags_url" "refs/tags/${prefix}.*" | awk '{print $2}' | sed 's#refs/tags/##')
+
+          max_counter=-1
+          for tag in "${matching_tags[@]:-}"; do
+            suffix="${tag#${prefix}.}"
+            if [[ "$suffix" =~ ^[0-9]+$ ]] && (( suffix > max_counter )); then
+              max_counter="$suffix"
+            fi
+          done
+
+          next_counter=$((max_counter + 1))
+          version="${prefix}.${next_counter}"
+
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: auto-${{ github.run_number }}
-          name: Automated Release ${{ github.run_number }}
+          tag_name: ${{ steps.release_version.outputs.version }}
+          name: ${{ steps.release_version.outputs.version }}
           generate_release_notes: true
