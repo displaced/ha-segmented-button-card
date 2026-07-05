@@ -147,6 +147,7 @@ class HASegmentedButtonCard extends HTMLElement {
     }
 
     const entityState = this._getEntityState();
+    const currentValue = entityState?.state ?? '';
     const segments = this._getSegments();
     const hasEntity = Boolean(this._config.entity);
 
